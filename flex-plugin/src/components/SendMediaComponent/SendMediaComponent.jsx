@@ -20,7 +20,8 @@ class UploadComponent extends React.Component {
 
     if (file) {
       try {
-        const { name: loggedWorkerName } = this.props.manager.workerClient;
+        const { attributes: workerAttributes } = this.props.manager.workerClient;
+        const loggedName = workerAttributes.contact_uri.replace('client:', '');
         const channel = await this.retrieveChannel();
 
         // This listener isn't defined to listen to every message on the ComponentDidMount method to avoid 
@@ -28,7 +29,7 @@ class UploadComponent extends React.Component {
         channel.once('messageAdded', async (msg) => {
           const { media, author } = msg;
 
-          if (author === loggedWorkerName && media) {
+          if (media && author === loggedName) {
             const mediaUrl = await media.getContentUrl();
             await this.sendMediaMessage(mediaUrl);
           }
